@@ -9,12 +9,18 @@ function getFFprobeWrappedExecution(
 ): execa.ExecaChildProcess {
   const params = ['-v', 'error', '-show_format', '-show_streams']
 
+  let ffprobeRealPath = ffprobePath;
+
+  if (process.env['FFPROBE_CUSTOM_PATH']) {
+    ffprobeRealPath = process.env['FFPROBE_CUSTOM_PATH'];
+  }
+
   if (typeof input === 'string') {
-    return execa(ffprobePath, [...params, input])
+    return execa(ffprobeRealPath, [...params, input])
   }
 
   if (isStream(input)) {
-    return execa(ffprobePath, [...params, '-i', 'pipe:0'], {
+    return execa(ffprobeRealPath, [...params, '-i', 'pipe:0'], {
       reject: false,
       input,
     })
